@@ -1,7 +1,9 @@
 open Core
 open Lexer
 open Lexing
-open TypeChecker
+open Typedlambda
+open Stlc
+
 
 let print_position outx lexbuf =
   let pos = lexbuf.lex_curr_p in
@@ -33,12 +35,24 @@ let loop filename () =
   match parse_with_error lexbuf with
   | Some value -> (
     printf "%a\n" Typedlambda.output_value value;
-    try TypeChecker.typecheck [] value |> ignore;
-      let steped = TypeChecker.step [] value in
-      printf "Stepped: %a\n" Typedlambda.output_value steped;
-    printf "Passes Typechecking" with
-    | TypeError s ->
-      fprintf stderr "%s" ("Failed typchecking. " ^ s ))
+
+    try Typedlambda.typecheck [] value |> ignore;
+      printf "Passes Typechecking\n";
+
+    let rec stepone ast =
+      try
+        let result = Typedlambda.step [] ast in
+        printf "Stepped: %a\n" Typedlambda.output_value result;
+        stepone result
+      with NormalForm -> printf "Cannot step now";
+    in stepone value;
+
+   with | TypeError s -> fprintf stderr "%s" ("Failed typchecking. " ^ s )
+)
+
+
+
+
   | None -> fprintf stderr "Error in parsing";
   In_channel.close inx
 

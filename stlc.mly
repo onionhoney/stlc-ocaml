@@ -3,6 +3,7 @@
 %{
 open Printf
 open Lexing
+open Typedlambda
 
 let var_table = Hashtbl.create 16
 %}
@@ -40,25 +41,26 @@ input:
 ;
  
 term:
- | i = NUM  { `Int i }
- | EMPTYPAREN { `Unit }
- | x = IDENT { `Var x }
+ | i = NUM  { Int i }
+ | EMPTYPAREN { Unit }
+ | v = var { Var v }
  | LPAREN; t=term; RPAREN { t }
- | FUNCTION_KW; id=IDENT; COLON; annot=typ; DBLARROW; body=term
- { `Function (id, annot, body) }
-
- | LET_KW; id=IDENT; EQUAL; v=term; IN_KW; e=term
- { `Let (id, v, e) }
- | t1=term; t2=term { `Funcall (t1, t2) }
- | t1=term; PLUS; t2=term { `Plus (t1, t2) }
- | t1=term; MULT; t2=term { `Mult (t1, t2) }
- 
+ | FUNCTION_KW; id = var; COLON; annot=typ; DBLARROW; body=term
+ { Function (id, annot, body) }
+ | LET_KW; id = var; EQUAL; v=term; IN_KW; e=term
+ { Let (id, v, e) }
+ | t1=term; t2=term { Funcall (t1, t2) }
+ | t1=term; PLUS; t2=term { Plus (t1, t2) }
+ | t1=term; MULT; t2=term { Mult (t1, t2) }
 ;
+
+var:
+ | x = IDENT { x }
 
 
 typ:
- | UNIT_T_KW { `UnitT } 
- | INT_T_KW  { `IntT }
+ | UNIT_T_KW { UnitT }
+ | INT_T_KW  { IntT }
  | LPAREN; t=typ; RPAREN { t }
- | t1=typ; ARROW; t2=typ { `Arrow (t1, t2) }  
+ | t1=typ; ARROW; t2=typ { Arrow (t1, t2) }
 ;
