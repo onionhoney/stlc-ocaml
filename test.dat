@@ -1,0 +1,2 @@
+let f = fun x : Int => (fun y : Int => x + y) in
+(f 1) 2
