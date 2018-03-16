@@ -58,7 +58,7 @@ let loop filename () =
   In_channel.close inx
 
 let () =
-  Command.basic ~summary:"Parse and display STLC"
+  Command.basic_spec ~summary:"Parse and display STLC" ~readme:(fun () -> "More detailed info")
     Command.Spec.(empty +> anon ("filename" %: file))
     loop 
   |> Command.run
