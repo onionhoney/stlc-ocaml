@@ -41,10 +41,11 @@ let loop filename () =
 
     let rec stepone ast =
       try
-        let result = Typedlambda.step [] ast in
-        printf "Stepped: %a\n" Typedlambda.output_value result;
-        stepone result
-      with NormalForm -> printf "Cannot step now";
+        let next = Typedlambda.step [] ast in
+        printf "Stepped: %a\n" Typedlambda.output_value next;
+        stepone next
+      with
+        NormalForm -> if Typedlambda.isval ast then printf "Done.\n" else printf "Stuck.\n"
     in stepone value;
 
    with | TypeError s -> fprintf stderr "%s" ("Failed typchecking. " ^ s )

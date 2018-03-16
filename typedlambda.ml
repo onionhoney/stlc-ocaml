@@ -13,11 +13,12 @@ type value =
   | Function of var * typ * value
   | Funcall of value * value
   | Let of var * value * value
+  | Letrec of var * typ * value * value
 
 
 open Core
 let rec output_value outc = function
-  | Unit  -> Out_channel.output_string outc "'()"
+  | Unit  -> Out_channel.output_string outc "()"
   | Int i -> fprintf outc "%d" i
   | Var x -> fprintf outc "%s" x
   | Plus (l, r) -> print_arith "+" outc l r
@@ -25,6 +26,7 @@ let rec output_value outc = function
   | Function (s, t, v) -> print_function outc s t v
   | Funcall (v1, v2) -> print_funcall outc v1 v2
   | Let (id, v, e) -> print_let outc id v e
+  | Letrec (id, t, v, e) -> print_let outc id v e
 
 and print_arith sign outc l r =
   Out_channel.output_string outc ("(" ^ sign ^ " ");
@@ -43,7 +45,7 @@ and print_function outc id typ expr =
 and print_let outc id v e =
   Out_channel.output_string outc ("∃ " ^ id ^ " = ");
   output_value outc v;
-  Out_channel.output_string outc "⊂\n";
+  Out_channel.output_string outc " in\n";
   output_value outc e;
   Out_channel.output_string outc ""
 
@@ -110,6 +112,10 @@ let rec step env term =
   | Funcall (t1, t2) -> Funcall(step env t1, t2)
   | Let (id, v, expr) when isval v -> subst id v expr
   | Let (id, t, expr) -> Let (id, step env t, expr)
+  | Letrec (id, t, v, expr) ->
+    let newt = Letrec (id, t, v, Var id) in
+    let newv = subst id newt v in
+    Let (id, newv, expr)
   | _ -> raise NormalForm
 
 
@@ -145,6 +151,14 @@ let rec typecheck env = function
       let new_env = (id, tv) :: env in
       let texpr = typecheck new_env expr in texpr
      end
+  | Letrec (id, t, v, expr) when isval v -> begin
+      let new_env = (id, t) :: env in 
+      let tv = typecheck new_env v in   
+      if t = tv then typecheck new_env expr else 
+        raise (TypeError ("Variable " ^ id ^ " does not have the type it claims"))
+    end
+  | Letrec (id,_,_,_) -> raise (TypeError (id ^ " in letrec must be a value."))
+
 
 
 

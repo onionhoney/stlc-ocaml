@@ -17,6 +17,7 @@
       ("Unit", UNIT_T_KW);
       ("Int", INT_T_KW);
       ("let", LET_KW);
+      ("letrec", LETREC_KW);
       ("in", IN_KW)
     ]
 }
@@ -28,7 +29,7 @@ let colon = ':'
 let id = ['a'-'z' '_' 'A'-'Z']['a'-'z' '_' 'A'-'Z' '0'-'9']*
 let arrow = "->"
 let dblarrow = "=>"
-let emptyparen = '(' white ')'
+let emptyparen = "()"
 
 
 rule read = parse
