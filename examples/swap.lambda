@@ -1,0 +1,3 @@
+let swap =
+    fun x:(Int,Int) => ( snd x, fst x)
+in swap (1, 2)

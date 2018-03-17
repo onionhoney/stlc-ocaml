@@ -63,3 +63,28 @@ let rec typecheck env = function
   | Letrec (id,_,_,_) -> raise (TypeError (id ^ " in letrec must be a value."))
   | Tuple2 (t1, t2) -> Pair2 (typecheck env t1, typecheck env t2)
   | Tuple3 (t1, t2, t3) -> Pair3 (typecheck env t1, typecheck env t2, typecheck env t3)
+  | Fst x -> begin
+      match typecheck env x with
+      | Pair2 (t1, t2) -> t1
+      | _ -> raise (TypeError ("Fst must be applied to a pair"))
+    end
+  | Snd x -> begin
+      match typecheck env x with
+      | Pair2 (t1, t2) -> t2
+      | _ -> raise (TypeError ("Snd must be applied to a pair"))
+    end
+  | Fst3 x -> begin
+      match typecheck env x with
+      | Pair3 (t1, t2, t3) -> t1
+      | _ -> raise (TypeError ("Fst3 must be applied to a pair"))
+    end
+  | Snd3 x -> begin
+      match typecheck env x with
+      | Pair3 (t1, t2, t3) -> t2
+      | _ -> raise (TypeError ("Snd3 must be applied to a pair"))
+    end
+  | Trd3 x -> begin
+      match typecheck env x with
+      | Pair3 (t1, t2, t3) -> t3
+      | _ -> raise (TypeError ("Trd3 must be applied to a pair"))
+    end

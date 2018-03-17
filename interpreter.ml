@@ -32,6 +32,11 @@ let rec subst var v term =
   | Let (id, t, expr) -> Let (id, cont t, cont expr)
   | Tuple2 (t1, t2) -> Tuple2 (cont t1, cont t2)
   | Tuple3 (t1, t2, t3) -> Tuple3 (cont t1, cont t2, cont t3)
+  | Fst t  -> Fst  (cont t)
+  | Snd t  -> Snd  (cont t)
+  | Fst3 t -> Fst3 (cont t)
+  | Snd3 t -> Snd3 (cont t)
+  | Trd3 t -> Trd3 (cont t)
   | _ ->
     Printf.eprintf "Do not know how to substitute : %a \n" Printer.output_value term;
     Printf.eprintf "In : var = %s, v = %a" var Printer.output_value v;
@@ -77,6 +82,19 @@ let rec step env term =
   | Tuple3 (t1, t2, t3) when not (isval t1) -> Tuple3 (step env t1, t2, t3)
   | Tuple3 (t1, t2, t3) when not (isval t2) -> Tuple3 (t1, step env t2, t3)
   | Tuple3 (t1, t2, t3) when not (isval t3) -> Tuple3 (t1, t2, step env t3)
+
+  | Fst (Tuple2 (tt1, tt2)) -> tt1
+  | Fst t -> Fst (step env t)
+
+  | Snd (Tuple2 (tt1, tt2)) -> tt2
+  | Snd t -> Snd (step env t)
+
+  | Fst3 (Tuple3 (tt1, tt2, tt3)) -> tt1
+  | Fst3 t -> Fst3 (step env t)
+  | Snd3 (Tuple3 (tt1, tt2, tt3)) -> tt2
+  | Snd3 t -> Snd3 (step env t)
+  | Trd3 (Tuple3 (tt1, tt2, tt3)) -> tt3
+  | Trd3 t -> Trd3 (step env t)
 
   | Var _ ->
     Printf.eprintf "Stuck at var: %a\n" Printer.output_value term;

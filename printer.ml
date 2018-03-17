@@ -18,7 +18,7 @@ let print_tuple outc f vals =
                         fprintf outc ")"
 
 
-let rec output_value outc = function
+let rec output_value outc term = match term with
   | Unit  -> Out_channel.output_string outc "()"
   | Int i -> fprintf outc "%d" i
   | Bool b -> Out_channel.output_string outc (if b then "true" else "false")
@@ -34,6 +34,20 @@ let rec output_value outc = function
   | Letrec (id, t, v, e) -> print_let outc id v e
   | Tuple2 (v1, v2) -> print_tuple outc (output_value outc) [v1; v2]
   | Tuple3 (v1, v2, v3) -> print_tuple outc (output_value outc) [v1; v2; v3]
+  | Fst t | Snd t | Fst3 t | Snd3 t | Trd3 t -> print_tuple_accessor outc term t
+
+and print_tuple_accessor outc term data =
+  let name = function
+    | Fst _ -> "fst"
+    | Snd _ -> "snd"
+    | Fst3 _ -> "fst3"
+    | Snd3 _ -> "snd3"
+    | Trd3 _ -> "trd3"
+    | _ -> "Unknown"
+  in
+  fprintf outc "%s(" (name term);
+  output_value outc data;
+  fprintf outc ")"
 
 and print_if outc cond t1 t2 =
   Out_channel.output_string outc "if ";
@@ -60,9 +74,9 @@ and print_function outc id typ expr =
 and print_let outc id v e =
   Out_channel.output_string outc ("∃ " ^ id ^ " = ");
   output_value outc v;
-  Out_channel.output_string outc " in\n";
+  Out_channel.output_string outc " in (\n";
   output_value outc e;
-  Out_channel.output_string outc ""
+  Out_channel.output_string outc ")"
 
 and print_funcall outc v1 v2 =
   fprintf outc "(";

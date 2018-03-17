@@ -1,0 +1,7 @@
+letrec odd : Int -> Bool = fun x:Int =>
+  let even = fun x:Int =>
+      if 0 < x then odd (x - 1) else true in
+  if 0 < x then even (x - 1) else false in
+
+odd 20
+

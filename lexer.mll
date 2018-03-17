@@ -1,6 +1,8 @@
 {
   open Lexing
   open Parser
+  open Stlc_types
+
   exception SyntaxError of string
   let next_line lexbuf =
     let pos = lexbuf.lex_curr_p in
@@ -10,6 +12,7 @@
       }
 
   let keyword_table = Hashtbl.create 72
+  let tuple_kw_table = Hashtbl.create 10
   let _ =
   List.iter (fun (kwd, tok) -> Hashtbl.add keyword_table kwd tok)
     [ ("function", FUNCTION_KW);
@@ -26,6 +29,15 @@
       ("true", TRUE_KW);
       ("false", FALSE_KW);
     ]
+  let _ =
+  List.iter (fun (kwd, tok) -> Hashtbl.add tuple_kw_table kwd tok)
+    [ ("fst", fun x -> Fst x);
+      ("snd", fun x -> Snd x);
+      ("fst3", fun x -> Fst3 x);
+      ("snd3", fun x -> Snd3 x);
+      ("trd",  fun x -> Trd3 x);
+      ("trd3", fun x -> Trd3 x);
+    ]
 }
 
 let digit = ['0'-'9']
@@ -41,6 +53,7 @@ let emptyparen = "()"
 rule read = parse
   | digit+ as num { NUM (int_of_string num) }
   | emptyparen { EMPTYPAREN }
+  | ','  { COMMA }
   | '('  { LPAREN }
   | ')'  { RPAREN }
   | '+'  { PLUS }
@@ -49,8 +62,10 @@ rule read = parse
   | '='  { EQUAL }
   | '<'  { LT }
   | id as id {
-      try Hashtbl.find keyword_table id with
-      | Not_found -> IDENT id
+      let ans = try Hashtbl.find keyword_table id with | Not_found -> IDENT id
+      in
+      let ans = try TUPLE_KWS (Hashtbl.find tuple_kw_table id) with | Not_found -> ans
+      in ans
     }
   | arrow { ARROW }
   | dblarrow { DBLARROW }
