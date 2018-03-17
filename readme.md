@@ -6,7 +6,7 @@ Currently the function-parameter-annotated version is implemented, with primary 
 
 Todos:
 
-- Conditionals and Boolean
+- ~~Conditionals and Boolean~~
 - Type Inference
 - Printing of Type Derivation Tree
 - Ref 
@@ -20,6 +20,9 @@ Install Ocaml, Core, Jbuilder and Menhir. Then run the following:
 ```
 jbuilder build stlc.exe
 jbuilder exec -- ./stlc.exe yourcode.lambda
+
+// Note that the prefix is always .exe regardless of OS.
 ```
+
 
 Example code can be found in examples/*.lambda.
