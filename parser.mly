@@ -59,14 +59,14 @@ input:
 ;
 
 block:
- | LET_KW; id = var; EQUAL; v=call; IN_KW; e=call { Let (id, v, e) }
- | LETREC_KW; id = var; COLON; annot=typ; EQUAL; v=call; IN_KW; e=call { Letrec (id, annot, v, e) }
+ | LET_KW; id = var; EQUAL; v=block; IN_KW; e=block { Let (id, v, e) }
+ | LETREC_KW; id = var; COLON; annot=typ; EQUAL; v=block; IN_KW; e=block { Letrec (id, annot, v, e) }
  | call { $1 }
 ;
 
 call:
   | kw = TUPLE_KWS; t = term { kw t (*try (tuple_kw_find kw) t with Not_found -> t *) }
-  | t1 = term; t2 = term { Funcall(t1, t2) }
+  | t1 = call; t2 = term { Funcall(t1, t2) }
   | term { $1 }
 
 term:
