@@ -9,6 +9,7 @@ type value =
   | Int of int
   | Var of var
   | Plus of value * value
+  | Minus of value * value
   | Mult of value * value
   | Function of var * typ * value
   | Funcall of value * value
@@ -22,6 +23,7 @@ let rec output_value outc = function
   | Int i -> fprintf outc "%d" i
   | Var x -> fprintf outc "%s" x
   | Plus (l, r) -> print_arith "+" outc l r
+  | Minus (l, r) -> print_arith "-" outc l r
   | Mult (l, r) -> print_arith "*" outc l r
   | Function (s, t, v) -> print_function outc s t v
   | Funcall (v1, v2) -> print_funcall outc v1 v2

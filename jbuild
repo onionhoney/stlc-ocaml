@@ -1,17 +1,15 @@
 (jbuild_version 1)
 
 (menhir
- ((modules (stlc))))
+ ((modules (parser))))
 
 (rule
   ((targets (lexer.ml))
-   (deps    (lexer.mll stlc.mli))
+   (deps    (lexer.mll))
    (action (chdir ${ROOT} (run ${bin:ocamllex} ${<} -ml )))))
 
-
-
 (executable
- ((name test)
+ ((name stlc)
   (libraries (core))
   (preprocess (pps (ppx_jane)))
  ))

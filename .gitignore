@@ -1,0 +1,7 @@
+.#*
+.merlin
+.ocamlinit.bak
+:merlin-log:
+_build/
+examples/_build
+*.steps

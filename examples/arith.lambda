@@ -1,0 +1,1 @@
+let x = fun v1:Int => fun v2:Int => ( (0 - 1) * (v1 + v2) ) in x 0 1

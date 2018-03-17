@@ -15,11 +15,11 @@ Todos:
 
 ## Installation
 
-Install Ocaml, Core and Jbuilder. Then run the following:
+Install Ocaml, Core, Jbuilder and Menhir. Then run the following:
 
 ```
-jbuilder build test.exe
-jbuilder exec -- ./test.exe yourcode.lambda
+jbuilder build stlc.exe
+jbuilder exec -- ./stlc.exe yourcode.lambda
 ```
 
-Example code can be found in *.lambda.
+Example code can be found in examples/*.lambda.

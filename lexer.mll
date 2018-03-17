@@ -1,6 +1,6 @@
 {
   open Lexing
-  open Stlc
+  open Parser
   exception SyntaxError of string
   let next_line lexbuf =
     let pos = lexbuf.lex_curr_p in
@@ -16,9 +16,15 @@
       ("fun", FUNCTION_KW);
       ("Unit", UNIT_T_KW);
       ("Int", INT_T_KW);
+      ("Bool", BOOL_T_KW);
       ("let", LET_KW);
       ("letrec", LETREC_KW);
-      ("in", IN_KW)
+      ("in", IN_KW);
+      ("if", IF_KW);
+      ("then", THEN_KW);
+      ("else", ELSE_KW);
+      ("true", TRUE_KW);
+      ("false", FALSE_KW);
     ]
 }
 
@@ -38,8 +44,10 @@ rule read = parse
   | '('  { LPAREN }
   | ')'  { RPAREN }
   | '+'  { PLUS }
+  | '-'  { MINUS }
   | '*'  { MULT }
   | '='  { EQUAL }
+  | '<'  { LT }
   | id as id {
       try Hashtbl.find keyword_table id with
       | Not_found -> IDENT id
