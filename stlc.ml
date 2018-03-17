@@ -5,7 +5,7 @@ open Stlc_types
 open Printer
 open Lexer
 open Parser
-open Typechecker
+open Checker
 open Interpreter
 
 let print_position outx lexbuf =
@@ -39,7 +39,7 @@ let loop filename () =
   | Some value -> (
     printf "%a\n" Printer.output_value value;
 
-    try Typechecker.typecheck [] value |> ignore;
+    try Checker.typecheck [] value |> ignore;
       printf "Passes Typechecking\n";
 
     let rec stepone ast =
@@ -51,7 +51,7 @@ let loop filename () =
         Interpreter.NormalForm -> if Stlc_types.isval ast then printf "Done.\n" else printf "Stuck.\n"
     in stepone value;
 
-   with | Typechecker.TypeError s -> fprintf stderr "%s" ("Failed typchecking. " ^ s )
+   with | Checker.TypeError s -> fprintf stderr "%s" ("Failed typchecking. " ^ s )
   )
 
   | None -> fprintf stderr "Error in parsing";
