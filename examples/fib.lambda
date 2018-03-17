@@ -2,4 +2,4 @@ letrec fib : Int->Int =
     fun x : Int => 
     if (1 < x) then fib (x - 1) + fib (x - 2) else x
 
-    in fib 10
+    in fib 5

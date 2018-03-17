@@ -28,6 +28,7 @@ let rec subst var v term =
       Function (t1, typ, newt)
   | Letrec (id, _, _, _) when id = var -> term
   | Letrec (id, typ, v1, expr) -> Letrec (id, typ, cont v1, cont expr)
+  | Let (id, t, expr) when id = var -> Let (id, cont t, expr)
   | Let (id, t, expr) -> Let (id, cont t, cont expr)
   | Tuple2 (t1, t2) -> Tuple2 (cont t1, cont t2)
   | Tuple3 (t1, t2, t3) -> Tuple3 (cont t1, cont t2, cont t3)
