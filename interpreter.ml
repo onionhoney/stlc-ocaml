@@ -29,6 +29,8 @@ let rec subst var v term =
   | Letrec (id, _, _, _) when id = var -> term
   | Letrec (id, typ, v1, expr) -> Letrec (id, typ, cont v1, cont expr)
   | Let (id, t, expr) -> Let (id, cont t, cont expr)
+  | Tuple2 (t1, t2) -> Tuple2 (cont t1, cont t2)
+  | Tuple3 (t1, t2, t3) -> Tuple3 (cont t1, cont t2, cont t3)
   | _ ->
     Printf.eprintf "Do not know how to substitute : %a \n" Printer.output_value term;
     Printf.eprintf "In : var = %s, v = %a" var Printer.output_value v;
@@ -69,11 +71,15 @@ let rec step env term =
     let newv = subst id newt v in
     Let (id, newv, expr)
 
+  | Tuple2 (t1, t2) when not (isval t1) -> Tuple2 (step env t1, t2)
+  | Tuple2 (t1, t2) when not (isval t2) -> Tuple2 (t1, step env t2)
+  | Tuple3 (t1, t2, t3) when not (isval t1) -> Tuple3 (step env t1, t2, t3)
+  | Tuple3 (t1, t2, t3) when not (isval t2) -> Tuple3 (t1, step env t2, t3)
+  | Tuple3 (t1, t2, t3) when not (isval t3) -> Tuple3 (t1, t2, step env t3)
+
   | Var _ ->
     Printf.eprintf "Stuck at var: %a\n" Printer.output_value term;
     raise NormalForm
   | _ ->
     Printf.eprintf "reached impossible state when stepping: %a\n" Printer.output_value term;
     raise NormalForm  (* When isval *)
-
-

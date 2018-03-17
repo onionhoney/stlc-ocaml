@@ -55,10 +55,11 @@ let rec typecheck env = function
       let texpr = typecheck new_env expr in texpr
     end
   | Letrec (id, t, v, expr) when isval v -> begin
-      let new_env = (id, t) :: env in 
-      let tv = typecheck new_env v in   
-      if t = tv then typecheck new_env expr else 
+      let new_env = (id, t) :: env in
+      let tv = typecheck new_env v in
+      if t = tv then typecheck new_env expr else
         raise (TypeError ("Variable " ^ id ^ " does not have the type it claims"))
     end
   | Letrec (id,_,_,_) -> raise (TypeError (id ^ " in letrec must be a value."))
-
+  | Tuple2 (t1, t2) -> Pair2 (typecheck env t1, typecheck env t2)
+  | Tuple3 (t1, t2, t3) -> Pair3 (typecheck env t1, typecheck env t2, typecheck env t3)
